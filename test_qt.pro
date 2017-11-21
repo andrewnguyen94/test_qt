@@ -15,3 +15,6 @@ HEADERS += \
     textedit.h \
     window3d.h \
     mesh.h
+
+RESOURCES += \
+    chest.qrc

@@ -49,9 +49,12 @@
 ****************************************************************************/
 
 #include "scenemodifier.h"
+#include "mesh.h"
 
 #include <QtCore/QDebug>
 #include <QMouseEvent>
+#include <Qt3DExtras>
+#include <qopengl.h>
 
 SceneModifier::SceneModifier(Qt3DCore::QEntity *rootEntity)
     : m_rootEntity(rootEntity)
@@ -117,19 +120,30 @@ SceneModifier::SceneModifier(Qt3DCore::QEntity *rootEntity)
     cylinder->setRings(100);
     cylinder->setSlices(20);
 
+    Mesh *chest = new Mesh();
+    chest->setSource(QUrl(QStringLiteral("qrc:/assests/chest/Chest.obj")));
+
     // CylinderMesh Transform
     Qt3DCore::QTransform *cylinderTransform = new Qt3DCore::QTransform();
-    cylinderTransform->setScale(1.5f);
+    cylinderTransform->setScale(0.1f);
     cylinderTransform->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(1.0f, 0.0f, 0.0f), 45.0f));
     cylinderTransform->setTranslation(QVector3D(-5.0f, 4.0f, -1.5));
+
+    Qt3DExtras::QDiffuseMapMaterial *diffuseMapMaterial = new Qt3DExtras::QDiffuseMapMaterial();
+    diffuseMapMaterial->setSpecular(QColor::fromRgbF(0.2f, 0.2f, 0.2f, 1.0f));
+    diffuseMapMaterial->setShininess(2.0f);
+
+    Qt3DRender::QTextureImage *chestDiffuseImage = new Qt3DRender::QTextureImage();
+    chestDiffuseImage->setSource(QUrl(QStringLiteral("qrc:/assests/chest/diffuse.webp")));
+    diffuseMapMaterial->diffuse()->addTextureImage(chestDiffuseImage);
 
     Qt3DExtras::QPhongMaterial *cylinderMaterial = new Qt3DExtras::QPhongMaterial();
     cylinderMaterial->setDiffuse(QColor(QRgb(0x928327)));
 
     // Cylinder
     m_cylinderEntity = new Qt3DCore::QEntity(m_rootEntity);
-    m_cylinderEntity->addComponent(cylinder);
-    m_cylinderEntity->addComponent(cylinderMaterial);
+    m_cylinderEntity->addComponent(chest);
+    m_cylinderEntity->addComponent(diffuseMapMaterial);
     m_cylinderEntity->addComponent(cylinderTransform);
 
     // Cuboid shape data

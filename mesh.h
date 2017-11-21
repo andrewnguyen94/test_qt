@@ -9,7 +9,7 @@ public:
     explicit Mesh(Qt3DRender::QMesh *parent = nullptr);
     ~Mesh();
 
-    QVector2D getWindowCoordinate(QMatrix projectionMatrix, QMatrix viewMatrix, QVector3D point3D, QVector2D viewSize,
+    QVector2D getWindowCoordinate(QMatrix4x4 projectionMatrix, QMatrix4x4 viewMatrix, QVector3D point3D, QVector2D viewSize,
                                 QVector2D viewOffset);
 };
 
