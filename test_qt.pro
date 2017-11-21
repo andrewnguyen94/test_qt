@@ -6,10 +6,12 @@ SOURCES += \
     scenemodifier.cpp \
     view_3d_window.cpp \
     textedit.cpp \
-    window3d.cpp
+    window3d.cpp \
+    mesh.cpp
 
 HEADERS += \
     scenemodifier.h \
     view_3d_window.h \
     textedit.h \
-    window3d.h
+    window3d.h \
+    mesh.h
