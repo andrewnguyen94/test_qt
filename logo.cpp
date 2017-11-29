@@ -65,6 +65,7 @@ Logo::Logo()
     const GLfloat x4 = +0.30f;
     const GLfloat y4 = +0.22f;
 
+//    line(x1,y1,0.0f,x2,y2,0.0f);
     quad(x1, y1, x2, y2, y2, x2, y1, x1);
     quad(x3, y3, x4, y4, y4, x4, y3, x3);
 
@@ -76,7 +77,7 @@ Logo::Logo()
     extrude(x4, y4, y4, x4);
     extrude(y4, x4, y3, x3);
 
-    const int NumSectors = 100;
+    const int NumSectors = 10;
 
     for (int i = 0; i < NumSectors; ++i) {
         GLfloat angle = (i * 2 * M_PI) / NumSectors;
@@ -114,6 +115,14 @@ void Logo::add(const QVector3D &v, const QVector3D &n)
     m_count += 6;
 }
 
+void Logo::addLine(const QVector3D &v){
+    GLfloat *p = m_data.data() + m_count;
+    *p++ = v.x();
+    *p++ = v.y();
+    *p++ = v.z();
+    m_count += 3;
+}
+
 void Logo::quad(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4)
 {
     QVector3D n = QVector3D::normal(QVector3D(x4 - x1, y4 - y1, 0.0f), QVector3D(x2 - x1, y2 - y1, 0.0f));
@@ -148,4 +157,10 @@ void Logo::extrude(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2)
     add(QVector3D(x2, y2, -0.05f), n);
     add(QVector3D(x2, y2, +0.05f), n);
     add(QVector3D(x1, y1, -0.05f), n);
+}
+
+void Logo::line(GLfloat x1, GLfloat y1, GLfloat z1, GLfloat x2, GLfloat y2, GLfloat z2){
+    QVector3D n = QVector3D::normal(QVector3D(0.0f,0.0f,0.0f), QVector3D(0.0f,0.0f,0.0f));
+    addLine(QVector3D(x1, y1, z1));
+    addLine(QVector3D(x2, y2, z2));
 }
