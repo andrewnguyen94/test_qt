@@ -1,9 +1,9 @@
 /****************************************************************************
 **
-** Copyright (C) 2014 Klaralvdalens Datakonsult AB (KDAB).
+** Copyright (C) 2016 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
-** This file is part of the Qt3D module of the Qt Toolkit.
+** This file is part of the examples of the Qt Toolkit.
 **
 ** $QT_BEGIN_LICENSE:BSD$
 ** Commercial License Usage
@@ -48,48 +48,29 @@
 **
 ****************************************************************************/
 
-#ifndef SCENEMODIFIER_H
-#define SCENEMODIFIER_H
+#include "mainwindow.h"
+#include "window.h"
+#include <QMenuBar>
+#include <QMenu>
+#include <QMessageBox>
 
-#include <QtCore/QObject>
-
-#include <Qt3DCore/qentity.h>
-#include <Qt3DCore/qtransform.h>
-
-#include <Qt3DExtras/QTorusMesh>
-#include <Qt3DExtras/QConeMesh>
-#include <Qt3DExtras/QCylinderMesh>
-#include <Qt3DExtras/QCuboidMesh>
-#include <Qt3DExtras/QPlaneMesh>
-#include <Qt3DExtras/QSphereMesh>
-#include <Qt3DExtras/QPhongMaterial>
-
-class SceneModifier : public QObject
+MainWindow::MainWindow()
 {
-    Q_OBJECT
+    QMenuBar *menuBar = new QMenuBar;
+    QMenu *menuWindow = menuBar->addMenu(tr("&Window"));
+    QAction *addNew = new QAction(menuWindow);
+    addNew->setText(tr("Add new"));
+    menuWindow->addAction(addNew);
+    connect(addNew, &QAction::triggered, this, &MainWindow::onAddNew);
+    setMenuBar(menuBar);
 
-public:
-    explicit SceneModifier(Qt3DCore::QEntity *rootEntity);
-    ~SceneModifier();
+    onAddNew();
+}
 
-public slots:
-    void enableTorus(bool enabled);
-    void enableCone(bool enabled);
-    void enableCylinder(bool enabled);
-    void enableCuboid(bool enabled);
-    void enablePlane(bool enabled);
-    void enableSphere(bool enabled);
-
-private:
-    Qt3DCore::QEntity *m_rootEntity;
-    Qt3DExtras::QTorusMesh *m_torus;
-    Qt3DCore::QEntity *m_coneEntity;
-    Qt3DCore::QEntity *m_cylinderEntity;
-    Qt3DCore::QEntity *m_torusEntity;
-    Qt3DCore::QEntity *m_cuboidEntity;
-    Qt3DCore::QEntity *m_planeEntity;
-    Qt3DCore::QEntity *m_sphereEntity;
-};
-
-#endif // SCENEMODIFIER_H
-
+void MainWindow::onAddNew()
+{
+    if (!centralWidget())
+        setCentralWidget(new Window(this));
+    else
+        QMessageBox::information(0, tr("Cannot add new window"), tr("Already occupied. Undock first."));
+}

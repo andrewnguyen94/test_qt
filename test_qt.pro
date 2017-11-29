@@ -3,18 +3,16 @@ QT += widgets
 
 SOURCES += \
     main.cpp \
-    scenemodifier.cpp \
-    view_3d_window.cpp \
-    textedit.cpp \
-    window3d.cpp \
-    mesh.cpp
+    mainwindow.cpp \
+    window.cpp \
+    glwidget.cpp \
+    logo.cpp
 
 HEADERS += \
-    scenemodifier.h \
-    view_3d_window.h \
-    textedit.h \
-    window3d.h \
-    mesh.h
+    mainwindow.h \
+    window.h \
+    glwidget.h \
+    logo.h
 
 RESOURCES += \
     chest.qrc
