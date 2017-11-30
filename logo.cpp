@@ -125,6 +125,8 @@ void Logo::addLine(const QVector3D &v){
 
 void Logo::quad(GLfloat x1, GLfloat y1, GLfloat x2, GLfloat y2, GLfloat x3, GLfloat y3, GLfloat x4, GLfloat y4)
 {
+    QVector3D tmp = QVector3D(x1 - x4, y1 - y4, 0.0f);
+    QVector3D tmp1 = QVector3D(x2 - x4, y2 - y4, 0.0f);
     QVector3D n = QVector3D::normal(QVector3D(x4 - x1, y4 - y1, 0.0f), QVector3D(x2 - x1, y2 - y1, 0.0f));
 
     add(QVector3D(x1, y1, -0.05f), n);
