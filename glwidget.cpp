@@ -59,7 +59,10 @@ GLWidget::GLWidget(QWidget *parent)
       m_xRot(0),
       m_yRot(0),
       m_zRot(0),
-      m_program(0)
+      m_program(0),
+      near_plane(0.01f),
+      far_plane(1000.0f),
+      fov(45.0f)
 {
     m_core = QCoreApplication::arguments().contains(QStringLiteral("--coreprofile"));
     // --transparent causes the clear color to be transparent. Therefore, on systems that
@@ -132,6 +135,18 @@ void GLWidget::cleanup()
     delete m_program;
     m_program = 0;
     doneCurrent();
+}
+
+void GLWidget::setFov(qreal fov)
+{
+    this->fov = fov;
+}
+
+void GLWidget::setProjection()
+{
+    m_proj.setToIdentity();
+    m_proj.perspective(fov, GLfloat(w) / h, near_plane, far_plane);
+    update();
 }
 
 static const char *vertexShaderSourceCore =
@@ -277,13 +292,18 @@ void GLWidget::paintGL()
 
 void GLWidget::resizeGL(int w, int h)
 {
+    this->w = w;
+    this->h = h;
     m_proj.setToIdentity();
-    m_proj.perspective(45.0f, GLfloat(w) / h, 0.01f, 100.0f);
+    m_proj.perspective(fov, GLfloat(w) / h, near_plane, far_plane);
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
     m_lastPos = event->pos();
+    if(event->button() & Qt::MiddleButton){
+        printf("test 111 \n");
+    }
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
@@ -297,6 +317,23 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
     } else if (event->buttons() & Qt::RightButton) {
         setXRotation(m_xRot + 8 * dy);
         setZRotation(m_zRot + 8 * dx);
+    } else if(event->button() == Qt::MidButton){
+        qDebug() << "Mid mouse move";
     }
     m_lastPos = event->pos();
+}
+
+void GLWidget::wheelEvent(QWheelEvent *event)
+{
+    int numDegrees = event->delta();
+    if(numDegrees > 0){
+        qreal tmp = fov + 5.0f;
+        setFov(tmp);
+        setProjection();
+    }else{
+        qreal tmp = fov - 5.0f;
+        setFov(tmp);
+        setProjection();
+    }
+    qDebug() << fov;
 }

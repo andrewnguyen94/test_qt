@@ -26,6 +26,8 @@ public slots:
     void setYRotation(int angle);
     void setZRotation(int angle);
     void cleanup();
+    void setFov(qreal fov);
+    void setProjection();
 
 signals:
     void xRotationChanged(int angle);
@@ -38,6 +40,7 @@ protected:
     void resizeGL(int width, int height) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
 
 private:
     void setupVertexAttribs();
@@ -59,6 +62,9 @@ private:
     QMatrix4x4 m_camera;
     QMatrix4x4 m_world;
     bool m_transparent;
+    qreal near_plane, far_plane;
+    qreal fov;
+    int w,h;
 
 };
 
