@@ -14,5 +14,3 @@ HEADERS += \
     glwidget.h \
     logo.h
 
-RESOURCES += \
-    chest.qrc
