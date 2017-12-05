@@ -6,11 +6,13 @@ SOURCES += \
     mainwindow.cpp \
     window.cpp \
     glwidget.cpp \
-    logo.cpp
+    logo.cpp \
+    logoone.cpp
 
 HEADERS += \
     mainwindow.h \
     window.h \
     glwidget.h \
-    logo.h
+    logo.h \
+    logoone.h
 

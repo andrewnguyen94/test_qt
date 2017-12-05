@@ -7,6 +7,7 @@
 #include <QOpenGLBuffer>
 #include <QMatrix4x4>
 #include "logo.h"
+#include "logoone.h"
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
@@ -44,6 +45,7 @@ protected:
 
 private:
     void setupVertexAttribs();
+    void setupVertexAttribsOne();
 
     bool m_core;
     int m_xRot;
@@ -51,9 +53,13 @@ private:
     int m_zRot;
     QPoint m_lastPos;
     Logo m_logo;
+    LogoOne m_logoone;
     QOpenGLVertexArrayObject m_vao;
+    QOpenGLVertexArrayObject m_vaoone;
     QOpenGLBuffer m_logoVbo;
+    QOpenGLBuffer m_logoVboOne;
     QOpenGLShaderProgram *m_program;
+    QOpenGLShaderProgram *m_programone;
     int m_projMatrixLoc;
     int m_mvMatrixLoc;
     int m_normalMatrixLoc;
