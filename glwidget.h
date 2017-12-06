@@ -29,6 +29,7 @@ public slots:
     void cleanup();
     void setFov(qreal fov);
     void setProjection();
+    void addSmartObject();
 
 signals:
     void xRotationChanged(int angle);
@@ -53,7 +54,7 @@ private:
     int m_zRot;
     QPoint m_lastPos;
     Logo m_logo;
-    LogoOne m_logoone;
+//    LogoOne m_logoone;
     QOpenGLVertexArrayObject m_vao;
     QOpenGLVertexArrayObject m_vaoone;
     QOpenGLBuffer m_logoVbo;
@@ -71,7 +72,7 @@ private:
     qreal near_plane, far_plane;
     qreal fov;
     int w,h;
-
+    QVector<LogoOne*> list_objs;
 };
 
 #endif // GLWIDGET_H

@@ -223,7 +223,7 @@ void GLWidget::initializeGL()
     glClearColor(0, 0, 0, m_transparent ? 0 : 1);
 
     m_program = new QOpenGLShaderProgram;
-    m_programone = new QOpenGLShaderProgram;
+//    m_programone = new QOpenGLShaderProgram;
     m_program->addShaderFromSourceCode(QOpenGLShader::Vertex, m_core ? vertexShaderSourceCore : vertexShaderSource);
     m_program->addShaderFromSourceCode(QOpenGLShader::Fragment, m_core ? fragmentShaderSourceCore : fragmentShaderSource);
     m_program->bindAttributeLocation("vertex", 0);
@@ -260,41 +260,16 @@ void GLWidget::initializeGL()
 
     m_program->release();
 
-    m_programone->addShaderFromSourceCode(QOpenGLShader::Vertex, m_core ? vertexShaderSourceCore : vertexShaderSource);
-    m_programone->addShaderFromSourceCode(QOpenGLShader::Fragment, m_core ? fragmentShaderSourceCore : fragmentShaderSource);
-    m_programone->bindAttributeLocation("vertex", 0);
-    m_programone->bindAttributeLocation("normal", 1);
-    m_programone->link();
+//    if(!list_objs.isEmpty()){
 
-    m_programone->bind();
-    m_projMatrixLoc = m_programone->uniformLocation("projMatrix");
-    m_mvMatrixLoc = m_programone->uniformLocation("mvMatrix");
-    m_normalMatrixLoc = m_programone->uniformLocation("normalMatrix");
-    m_lightPosLoc = m_programone->uniformLocation("lightPos");
+//    }
+}
 
-    // Create a vertex array object. In OpenGL ES 2.0 and OpenGL 2.x
-    // implementations this is optional and support may not be present
-    // at all. Nonetheless the below code works in all cases and makes
-    // sure there is a VAO when one is needed.
-    m_vaoone.create();
-    QOpenGLVertexArrayObject::Binder vaooneBinder(&m_vaoone);
-
-    // Setup our vertex buffer object.
-    m_logoVboOne.create();
-    m_logoVboOne.bind();
-    m_logoVboOne.allocate(m_logoone.constDataOne(), m_logoone.countOne() * sizeof(GLfloat));
-
-    // Store the vertex attribute bindings for the program.
-    setupVertexAttribsOne();
-
-    // Our camera never changes in this example.
-//    m_camera.setToIdentity();
-//    m_camera.translate(0, 0, -1);
-
-    // Light position is fixed.
-    m_programone->setUniformValue(m_lightPosLoc, QVector3D(0, 0, 70));
-
-    m_programone->release();
+void GLWidget::addSmartObject()
+{
+    LogoOne *m_logoone = new LogoOne;
+    list_objs.append(m_logoone);
+    update();
 }
 
 void GLWidget::setupVertexAttribs()
@@ -342,15 +317,59 @@ void GLWidget::paintGL()
 
 
     glDrawArrays(GL_LINES, 0, m_logo.vertexCountLine());
-    QOpenGLVertexArrayObject::Binder vaooneBinder(&m_vaoone);
-    m_programone->bind();
-    m_programone->setUniformValue(m_projMatrixLoc, m_proj);
-    m_programone->setUniformValue(m_mvMatrixLoc, m_camera * m_world);
-    m_programone->setUniformValue(m_normalMatrixLoc, normalMatrix);
-    glDrawArrays(GL_TRIANGLES, 0, m_logoone.vertexCountOne());
+
+    if(!list_objs.isEmpty()){
+        for(int i = 0; i < list_objs.size(); i++){
+            LogoOne *tmp = list_objs[i];
+            m_programone = new QOpenGLShaderProgram;
+            m_programone->addShaderFromSourceCode(QOpenGLShader::Vertex, m_core ? vertexShaderSourceCore : vertexShaderSource);
+            m_programone->addShaderFromSourceCode(QOpenGLShader::Fragment, m_core ? fragmentShaderSourceCore : fragmentShaderSource);
+            m_programone->bindAttributeLocation("vertex", 0);
+            m_programone->bindAttributeLocation("normal", 1);
+            m_programone->link();
+
+            m_programone->bind();
+            m_projMatrixLoc = m_programone->uniformLocation("projMatrix");
+            m_mvMatrixLoc = m_programone->uniformLocation("mvMatrix");
+            m_normalMatrixLoc = m_programone->uniformLocation("normalMatrix");
+            m_lightPosLoc = m_programone->uniformLocation("lightPos");
+
+            // Create a vertex array object. In OpenGL ES 2.0 and OpenGL 2.x
+            // implementations this is optional and support may not be present
+            // at all. Nonetheless the below code works in all cases and makes
+            // sure there is a VAO when one is needed.
+            m_vaoone.create();
+            QOpenGLVertexArrayObject::Binder vaooneBinder(&m_vaoone);
+
+            // Setup our vertex buffer object.
+            m_logoVboOne.create();
+            m_logoVboOne.bind();
+            m_logoVboOne.allocate(tmp->constDataOne(), tmp->countOne() * sizeof(GLfloat));
+
+            // Store the vertex attribute bindings for the program.
+            setupVertexAttribsOne();
+
+            // Our camera never changes in this example.
+            m_camera.setToIdentity();
+            m_camera.translate(0, 0, -1);
+
+            // Light position is fixed.
+            m_programone->setUniformValue(m_lightPosLoc, QVector3D(0, 0, 70));
+
+            m_programone->release();
+
+//            QOpenGLVertexArrayObject::Binder vaooneBinder(&m_vaoone);
+            m_programone->bind();
+            m_programone->setUniformValue(m_projMatrixLoc, m_proj);
+            m_programone->setUniformValue(m_mvMatrixLoc, m_camera * m_world);
+            m_programone->setUniformValue(m_normalMatrixLoc, normalMatrix);
+            glDrawArrays(GL_TRIANGLES, 0, tmp->vertexCountOne());
+
+            m_programone->release();
+        }
+    }
 
     m_program->release();
-    m_programone->release();
 }
 
 void GLWidget::resizeGL(int w, int h)

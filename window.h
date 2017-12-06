@@ -34,6 +34,7 @@ private:
     QPushButton *dockBtn;
     MainWindow *mainWindow;
     QWidget *widget;
+    QPushButton *addSmartObject;
 };
 
 #endif // WINDOW_H
