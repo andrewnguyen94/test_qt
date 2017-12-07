@@ -2,6 +2,7 @@
 #define WINDOW_H
 
 #include <QWidget>
+#include <QComboBox>
 
 QT_BEGIN_NAMESPACE
 class QSlider;
@@ -35,6 +36,7 @@ private:
     MainWindow *mainWindow;
     QWidget *widget;
     QPushButton *addSmartObject;
+    QComboBox *combobox;
 };
 
 #endif // WINDOW_H
