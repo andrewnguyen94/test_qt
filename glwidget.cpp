@@ -63,7 +63,10 @@ GLWidget::GLWidget(QWidget *parent)
       m_programone(0),
       near_plane(0.01f),
       far_plane(1000.0f),
-      fov(45.0f)
+      fov(45.0f),
+      x_cam(0.0f),
+      y_cam(0.1f),
+      z_cam(-1.0f)
 {
     m_core = QCoreApplication::arguments().contains(QStringLiteral("--coreprofile"));
     // --transparent causes the clear color to be transparent. Therefore, on systems that
@@ -127,6 +130,26 @@ void GLWidget::setZRotation(int angle)
         emit zRotationChanged(angle);
         update();
     }
+}
+
+void GLWidget::setCameraPosition()
+{
+
+}
+
+void GLWidget::setXCameraPosition(qreal x)
+{
+
+}
+
+void GLWidget::setYCameraPosition(qreal y)
+{
+
+}
+
+void GLWidget::setZCameraPosition(qreal z)
+{
+
 }
 
 void GLWidget::cleanup()
@@ -253,16 +276,49 @@ void GLWidget::initializeGL()
 
     // Our camera never changes in this example.
     m_camera.setToIdentity();
-    m_camera.translate(0, 0, -1);
+    m_camera.translate(x_cam, y_cam, z_cam);
 
     // Light position is fixed.
     m_program->setUniformValue(m_lightPosLoc, QVector3D(0, 0, 70));
 
     m_program->release();
 
-//    if(!list_objs.isEmpty()){
+    m_programone = new QOpenGLShaderProgram;
+    m_programone->addShaderFromSourceCode(QOpenGLShader::Vertex, m_core ? vertexShaderSourceCore : vertexShaderSource);
+    m_programone->addShaderFromSourceCode(QOpenGLShader::Fragment, m_core ? fragmentShaderSourceCore : fragmentShaderSource);
+    m_programone->bindAttributeLocation("vertex", 0);
+    m_programone->bindAttributeLocation("normal", 1);
+    m_programone->link();
 
-//    }
+    m_programone->bind();
+    m_projMatrixLoc = m_programone->uniformLocation("projMatrix");
+    m_mvMatrixLoc = m_programone->uniformLocation("mvMatrix");
+    m_normalMatrixLoc = m_programone->uniformLocation("normalMatrix");
+    m_lightPosLoc = m_programone->uniformLocation("lightPos");
+
+    // Create a vertex array object. In OpenGL ES 2.0 and OpenGL 2.x
+    // implementations this is optional and support may not be present
+    // at all. Nonetheless the below code works in all cases and makes
+    // sure there is a VAO when one is needed.
+    m_vaoone.create();
+    QOpenGLVertexArrayObject::Binder vaooneBinder(&m_vaoone);
+
+    // Setup our vertex buffer object.
+    m_logoVboOne.create();
+    m_logoVboOne.bind();
+    m_logoVboOne.allocate(m_logoone.constDataOne(), m_logoone.countOne() * sizeof(GLfloat));
+
+    // Store the vertex attribute bindings for the program.
+    setupVertexAttribsOne();
+
+    // Our camera never changes in this example.
+    m_camera.setToIdentity();
+    m_camera.translate(x_cam, y_cam, z_cam);
+
+    // Light position is fixed.
+    m_programone->setUniformValue(m_lightPosLoc, QVector3D(0, 0, 70));
+
+    m_programone->release();
 }
 
 void GLWidget::addSmartObject()
@@ -304,6 +360,7 @@ void GLWidget::paintGL()
     m_world.rotate(180.0f - (m_xRot / 16.0f), 1, 0, 0);
     m_world.rotate(m_yRot / 16.0f, 0, 1, 0);
     m_world.rotate(m_zRot / 16.0f, 0, 0, 1);
+//    m_world.translate(0.0f);
 
     QOpenGLVertexArrayObject::Binder vaoBinder(&m_vao);
     m_program->bind();
@@ -318,57 +375,14 @@ void GLWidget::paintGL()
 
     glDrawArrays(GL_LINES, 0, m_logo.vertexCountLine());
 
-    if(!list_objs.isEmpty()){
-        for(int i = 0; i < list_objs.size(); i++){
-            LogoOne *tmp = list_objs[i];
-            m_programone = new QOpenGLShaderProgram;
-            m_programone->addShaderFromSourceCode(QOpenGLShader::Vertex, m_core ? vertexShaderSourceCore : vertexShaderSource);
-            m_programone->addShaderFromSourceCode(QOpenGLShader::Fragment, m_core ? fragmentShaderSourceCore : fragmentShaderSource);
-            m_programone->bindAttributeLocation("vertex", 0);
-            m_programone->bindAttributeLocation("normal", 1);
-            m_programone->link();
+    QOpenGLVertexArrayObject::Binder vaooneBinder(&m_vaoone);
+    m_programone->bind();
+    m_programone->setUniformValue(m_projMatrixLoc, m_proj);
+    m_programone->setUniformValue(m_mvMatrixLoc, m_camera * m_world);
+    m_programone->setUniformValue(m_normalMatrixLoc, normalMatrix);
+    glDrawArrays(GL_TRIANGLES, 0, m_logoone.vertexCountOne());
 
-            m_programone->bind();
-            m_projMatrixLoc = m_programone->uniformLocation("projMatrix");
-            m_mvMatrixLoc = m_programone->uniformLocation("mvMatrix");
-            m_normalMatrixLoc = m_programone->uniformLocation("normalMatrix");
-            m_lightPosLoc = m_programone->uniformLocation("lightPos");
-
-            // Create a vertex array object. In OpenGL ES 2.0 and OpenGL 2.x
-            // implementations this is optional and support may not be present
-            // at all. Nonetheless the below code works in all cases and makes
-            // sure there is a VAO when one is needed.
-            m_vaoone.create();
-            QOpenGLVertexArrayObject::Binder vaooneBinder(&m_vaoone);
-
-            // Setup our vertex buffer object.
-            m_logoVboOne.create();
-            m_logoVboOne.bind();
-            m_logoVboOne.allocate(tmp->constDataOne(), tmp->countOne() * sizeof(GLfloat));
-
-            // Store the vertex attribute bindings for the program.
-            setupVertexAttribsOne();
-
-            // Our camera never changes in this example.
-            m_camera.setToIdentity();
-            m_camera.translate(0, 0, -1);
-
-            // Light position is fixed.
-            m_programone->setUniformValue(m_lightPosLoc, QVector3D(0, 0, 70));
-
-            m_programone->release();
-
-//            QOpenGLVertexArrayObject::Binder vaooneBinder(&m_vaoone);
-            m_programone->bind();
-            m_programone->setUniformValue(m_projMatrixLoc, m_proj);
-            m_programone->setUniformValue(m_mvMatrixLoc, m_camera * m_world);
-            m_programone->setUniformValue(m_normalMatrixLoc, normalMatrix);
-            glDrawArrays(GL_TRIANGLES, 0, tmp->vertexCountOne());
-
-            m_programone->release();
-        }
-    }
-
+    m_programone->release();
     m_program->release();
 }
 
@@ -384,7 +398,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 {
     m_lastPos = event->pos();
     if(event->button() & Qt::MiddleButton){
-        printf("test 111 \n");
+        qDebug() << "111";
     }
 }
 
@@ -392,15 +406,16 @@ void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
     int dx = event->x() - m_lastPos.x();
     int dy = event->y() - m_lastPos.y();
-
+    qDebug() << event->buttons();
     if (event->buttons() & Qt::LeftButton) {
-        setXRotation(m_xRot + 8 * dy);
-        setYRotation(m_yRot + 8 * dx);
+
     } else if (event->buttons() & Qt::RightButton) {
         setXRotation(m_xRot + 8 * dy);
         setZRotation(m_zRot + 8 * dx);
-    } else if(event->button() == Qt::MidButton){
-        qDebug() << "Mid mouse move";
+    } else if(event->buttons() == Qt::MidButton){
+//        setXRotation(m_xRot + 8 * dy);
+//        setYRotation(m_yRot + 8 * dx);
+
     }
     m_lastPos = event->pos();
 }

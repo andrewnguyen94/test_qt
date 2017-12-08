@@ -26,6 +26,10 @@ public slots:
     void setXRotation(int angle);
     void setYRotation(int angle);
     void setZRotation(int angle);
+    void setCameraPosition();
+    void setXCameraPosition(qreal x);
+    void setYCameraPosition(qreal y);
+    void setZCameraPosition(qreal z);
     void cleanup();
     void setFov(qreal fov);
     void setProjection();
@@ -54,7 +58,7 @@ private:
     int m_zRot;
     QPoint m_lastPos;
     Logo m_logo;
-//    LogoOne m_logoone;
+    LogoOne m_logoone;
     QOpenGLVertexArrayObject m_vao;
     QOpenGLVertexArrayObject m_vaoone;
     QOpenGLBuffer m_logoVbo;
@@ -73,6 +77,7 @@ private:
     qreal fov;
     int w,h;
     QVector<LogoOne*> list_objs;
+    qreal x_cam, y_cam, z_cam;
 };
 
 #endif // GLWIDGET_H

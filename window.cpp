@@ -68,8 +68,8 @@ Window::Window(MainWindow *mw)
     xSlider = createSlider();
     ySlider = createSlider();
     zSlider = createSlider();
-    addSmartObject = new QPushButton;
-    addSmartObject->setText("add");
+//    addSmartObject = new QPushButton;
+//    addSmartObject->setText("add");
 
     connect(xSlider, &QSlider::valueChanged, glWidget, &GLWidget::setXRotation);
     connect(glWidget, &GLWidget::xRotationChanged, xSlider, &QSlider::setValue);
@@ -77,7 +77,7 @@ Window::Window(MainWindow *mw)
     connect(glWidget, &GLWidget::yRotationChanged, ySlider, &QSlider::setValue);
     connect(zSlider, &QSlider::valueChanged, glWidget, &GLWidget::setZRotation);
     connect(glWidget, &GLWidget::zRotationChanged, zSlider, &QSlider::setValue);
-    connect(addSmartObject, &QPushButton::clicked, glWidget, &GLWidget::addSmartObject);
+//    connect(addSmartObject, &QPushButton::clicked, glWidget, &GLWidget::addSmartObject);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     QHBoxLayout *container = new QHBoxLayout;
@@ -85,7 +85,7 @@ Window::Window(MainWindow *mw)
     container->addWidget(xSlider);
     container->addWidget(ySlider);
     container->addWidget(zSlider);
-    container->addWidget(addSmartObject);
+//    container->addWidget(addSmartObject);
 
     QWidget *w = new QWidget;
     w->setLayout(container);
